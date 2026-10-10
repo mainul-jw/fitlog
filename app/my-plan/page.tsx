@@ -2,17 +2,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useFit } from "../context/FitContext";
-import { Check, X, Eye, Dumbbell, Clock, Flame, Star } from "lucide-react";
+import { Check, X, Eye, Dumbbell, Clock, Flame } from "lucide-react";
 
 export default function MyPlanPage() {
   const { plan, saved, removeFromPlan, removeFromSaved, toggleDone } = useFit();
-  const [activeTab, setActiveTab] = useState("plan");
+  const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
 
   const currentList = activeTab === "plan" ? plan : saved;
 
   const totalExercises = plan.length;
-  const totalMinutes = plan.reduce((acc, curr) => acc + (parseInt(curr.duration) || 0), 0);
-  const totalCalories = plan.reduce((acc, curr) => acc + (parseInt(curr.calories) || 0), 0);
+  const totalMinutes = plan.reduce(
+    (acc, curr) => acc + (Number.parseInt(String(curr.duration), 10) || 0),
+    0,
+  );
+  const totalCalories = plan.reduce(
+    (acc, curr) => acc + (Number.parseInt(String(curr.calories), 10) || 0),
+    0,
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 space-y-8">

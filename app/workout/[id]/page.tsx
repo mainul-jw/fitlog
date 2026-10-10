@@ -1,23 +1,38 @@
 "use client";
-import { useEffect, useState, use } from "react";
+import { use, useEffect, useState } from "react";
 import { useFit } from "../../context/FitContext";
-import { Clock, Flame, Star, Plus, Bookmark } from "lucide-react";
+import { Bookmark, Clock, Flame, Plus, Star } from "lucide-react";
+import type { Workout } from "../../types";
 
-export default function WorkoutDetailPage({ params: paramsPromise }) {
+export default function WorkoutDetailPage({
+  params: paramsPromise,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const params = use(paramsPromise);
   const { id } = params;
-  const [workout, setWorkout] = useState(null);
+  const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
   const { addToPlan, addToSaved } = useFit();
 
   useEffect(() => {
-    fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
+    const loadWorkout = async () => {
+      try {
+        const response = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch workout: ${response.status}`);
+        }
+
+        const data = (await response.json()) as Workout;
         setWorkout(data);
+      } catch (error) {
+        console.error("Workout detail fetch failed:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => console.error(err));
+      }
+    };
+
+    void loadWorkout();
   }, [id]);
 
   if (loading) {

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import "./globals.css";
 import { FitProvider } from "./context/FitContext";
 import { Toaster } from "react-hot-toast";
@@ -9,7 +10,7 @@ export const metadata = {
   description: "Train with intent. Log every set.",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-[#121212] text-white min-h-screen flex flex-col justify-between">

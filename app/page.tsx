@@ -1,29 +1,48 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowDown, Flame, Clock, Star, ChevronDown } from "lucide-react";
+import type { SortOption, Workout } from "./types";
 
 export default function HomePage() {
-  const [workouts, setWorkouts] = useState([]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState("duration");
+  const [sortBy, setSortBy] = useState<SortOption>("duration");
 
   useEffect(() => {
-    fetch("https://api.abcz.workers.dev/api/fitlog")
-      .then((res) => res.json())
-      .then((data) => {
+    const loadWorkouts = async () => {
+      try {
+        const response = await fetch("https://api.abcz.workers.dev/api/fitlog");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch workouts: ${response.status}`);
+        }
+
+        const data = (await response.json()) as Workout[];
         setWorkouts(data);
+      } catch (error) {
+        console.error("Workout fetch failed:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => console.error(err));
+      }
+    };
+
+    void loadWorkouts();
   }, []);
 
-  const sortedWorkouts = [...workouts].sort((a, b) => {
-    if (sortBy === "duration") return parseInt(a.duration) - parseInt(b.duration);
-    if (sortBy === "calories") return parseInt(b.calories) - parseInt(a.calories);
-    if (sortBy === "rating") return b.rating - a.rating;
-    return 0;
-  });
+  const sortedWorkouts = useMemo(() => {
+    return [...workouts].sort((a, b) => {
+      if (sortBy === "duration") {
+        return Number.parseInt(String(a.duration), 10) - Number.parseInt(String(b.duration), 10);
+      }
+      if (sortBy === "calories") {
+        return Number.parseInt(String(b.calories), 10) - Number.parseInt(String(a.calories), 10);
+      }
+      if (sortBy === "rating") {
+        return Number(b.rating ?? 0) - Number(a.rating ?? 0);
+      }
+      return 0;
+    });
+  }, [sortBy, workouts]);
 
   return (
     <div className="space-y-16 pb-16">
@@ -69,7 +88,7 @@ export default function HomePage() {
             <div className="relative">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
                 className="bg-zinc-900 border border-zinc-700 text-white px-3 py-2 pr-8 rounded-md text-sm appearance-none cursor-pointer focus:outline-none"
               >
                 <option value="duration">Duration</option>
