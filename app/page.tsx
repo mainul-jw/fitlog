@@ -48,9 +48,9 @@ export default function HomePage() {
         </div>
         <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden border border-zinc-800">
           <img
-            src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1000&auto=format&fit=crop"
+            src="https://raw.githubusercontent.com/ProgrammingHero1/B14-A6-Fit-Log/refs/heads/main/assets/banner.png"
             alt="Hero Banner"
-            className="w-full h-full object-cover"
+            className="object-cover h-full p-5"
           />
         </div>
       </section>
