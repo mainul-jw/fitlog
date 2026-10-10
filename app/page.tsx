@@ -69,7 +69,7 @@ export default function HomePage() {
           <img
             src="https://raw.githubusercontent.com/ProgrammingHero1/B14-A6-Fit-Log/refs/heads/main/assets/banner.png"
             alt="Hero Banner"
-            className="object-cover h-full p-5"
+            className="object-cover block mx-auto p-5"
           />
         </div>
       </section>
