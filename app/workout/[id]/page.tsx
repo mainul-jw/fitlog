@@ -1,8 +1,8 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { use } from "react";
 import { useFit } from "../../context/FitContext";
-import { Bookmark, Clock, Flame, Plus, Star } from "lucide-react";
-import type { Workout } from "../../types";
+import { Bookmark, Plus } from "lucide-react";
+import { getWorkoutById } from "../../data/workouts";
 
 export default function WorkoutDetailPage({
   params: paramsPromise,
@@ -10,39 +10,8 @@ export default function WorkoutDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const params = use(paramsPromise);
-  const { id } = params;
-  const [workout, setWorkout] = useState<Workout | null>(null);
-  const [loading, setLoading] = useState(true);
+  const workout = getWorkoutById(params.id);
   const { addToPlan, addToSaved } = useFit();
-
-  useEffect(() => {
-    const loadWorkout = async () => {
-      try {
-        const response = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch workout: ${response.status}`);
-        }
-
-        const data = (await response.json()) as Workout;
-        setWorkout(data);
-      } catch (error) {
-        console.error("Workout detail fetch failed:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadWorkout();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="py-32 text-center text-zinc-400 flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-4 border-[#ccff00] border-t-transparent rounded-full animate-spin"></div>
-        Loading exercise details...
-      </div>
-    );
-  }
 
   if (!workout) return <div className="text-center py-20">Workout not found.</div>;
 
@@ -57,8 +26,8 @@ export default function WorkoutDetailPage({
       <div className="space-y-6">
         <div>
           <div className="flex gap-2 mb-3">
-            {workout.category?.map((cat, i) => (
-              <span key={i} className="bg-zinc-800 text-[#ccff00] text-xs font-bold px-2.5 py-1 rounded">
+            {workout.category?.map((cat) => (
+              <span key={cat} className="bg-zinc-800 text-[#ccff00] text-xs font-bold px-2.5 py-1 rounded">
                 {cat}
               </span>
             ))}
@@ -106,7 +75,7 @@ export default function WorkoutDetailPage({
             onClick={() => addToPlan(workout)}
             className="flex-1 bg-[#ccff00] text-black font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-[#b3e600] transition"
           >
-            <Plus size={18} /> Add to today's plan
+            <Plus size={18} /> Add to today&apos;s plan
           </button>
           <button
             onClick={() => addToSaved(workout)}
